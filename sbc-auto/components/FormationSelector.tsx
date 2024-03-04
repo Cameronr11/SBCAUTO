@@ -4,7 +4,11 @@ import { Box, FormControl, FormLabel, Input, SimpleGrid, ChakraProvider } from '
 
 const positions: string[] = ['GK', 'CB', 'LB', 'RB', 'LWB', 'RWB', 'CM', 'CDM', 'CAM', 'CF', 'ST', 'LM', 'RM', 'RW', 'LW'];
 
-const FormationComponent = () => {
+interface FormationComponentProps {
+  onFormationChange: (newFormation: { [key: string]: number }) => void;
+}
+
+const FormationComponent: React.FC<FormationComponentProps> = ({ onFormationChange }) => {
   const [positionCounts, setPositionCounts] = useState<{ [key: string]: string }>(() => {
     const initialCounts: { [key: string]: string } = {};
     positions.forEach(position => { initialCounts[position] = '0'; });
@@ -12,11 +16,16 @@ const FormationComponent = () => {
   });
 
   const handleChange = (position: string, value: string) => {
-    // Use regular expression to remove non-digit characters
     const newValue = value.replace(/\D/, ''); 
-    setPositionCounts(prevCounts => ({ ...prevCounts, [position]: newValue }));
+    setPositionCounts(prevCounts => {
+      const updatedCounts = { ...prevCounts, [position]: newValue };
+      onFormationChange(Object.keys(updatedCounts).reduce((acc, key) => ({
+        ...acc,
+        [key]: parseInt(updatedCounts[key], 10)
+      }), {}));
+      return updatedCounts;
+    });
   };
-
   return (
     <ChakraProvider>
       <Box p={4} color="white">

@@ -6,10 +6,6 @@ import CustomButton from '@/components/CustomButton'
 
 export const SignInPage = () => {
 
-  const handleSignInClick = () => {
-    router.push('/ScrapeSolvePage')
-  }
-
   const router = useRouter();
   
   interface SignInFormData {
@@ -61,12 +57,12 @@ export const SignInPage = () => {
           <input {...register("password")} className="shadow appearance-none border border-red-500 rounded w-full py-2 px-3 text-white bg-gray-800 leading-tight focus:outline-none focus:shadow-outline" id="password" type="password" placeholder="******************" />
         </div>
         <div className="flex items-center justify-between">
-          <CustomButton
-            title= 'Sign in'
-            btnType='button'
-            containerStyles='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline'
-            handleClick={handleSignInClick}
-            />
+        <button
+          type="submit"
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+        >
+          Sign In
+        </button>
         </div>
       </form>
     </div>

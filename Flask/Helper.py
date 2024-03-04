@@ -97,11 +97,7 @@ class formations:
 
     # we are going have to rework how we handle formations as in the frontend
     #the user just gives us the number of players in each position
-    def build_formation(userInput):
-        formation = []
-        for position in userInput:
-            formation.append(position)
-        return formation
+    
 
 class checkers:
 

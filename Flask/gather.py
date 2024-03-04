@@ -155,7 +155,6 @@ class Gather:
 
             # Assuming card is an index
         for card in player_cards:
-            print("in loop")
             if not self.is_loan_player(card):
                 try:
                     time.sleep(1)

@@ -37,6 +37,10 @@ export type SBCOption = {
   label: string;
 };
 
+interface FormationSelectorProps {
+  onFormationChange: (newFormation: Formation) => void;
+}
+
 const SolverPage = () => {
   const [formation, setFormation] = useState<Formation>({});
   const [criteria, setCriteria] = useState<Criteria[]>([]);
@@ -53,7 +57,19 @@ const SolverPage = () => {
       return acc;
     }, {});
 
-    const payload = { formation, criteria: criteriaPayload };
+
+    const formationArray = Object.entries(formation).reduce<string[]>((acc, [position, count]) => {
+      if (count > 0) {
+        acc.push(...Array(count).fill(position));
+      }
+      return acc;
+    }, []);
+
+    const payload = {
+      formation: formationArray,
+      criteria: criteriaPayload, // Ensure criteriaPayload is constructed as required
+    };
+
     console.log("Sending payload to backend:", payload);
 
 
@@ -116,12 +132,18 @@ const SolverPage = () => {
   
           <Box position="absolute" top="20%" left="10%">
             <Text mb={4} fontSize="2xl" color="blue.400" fontWeight="bold">Specify # of Players Per Position:</Text>
-            <FormationSelector />
+            <FormationSelector onFormationChange={(newFormation) => setFormation(newFormation)} />
           </Box>
+
   
           <Box position="absolute" top="20%" right="10%">
             <Text mb={4} fontSize="2xl" color="blue.400" fontWeight="bold">Choose SBC Criteria:</Text>
             <CriteriaComponent onCriteriaChange={updateCriteria} />
+          </Box>
+
+          <Box position="absolute" top="20%" left="10%">
+            <Text mb={4} fontSize="2xl" color="blue.400" fontWeight="bold">Specify # of Players Per Position:</Text>
+            <FormationSelector onFormationChange={(newFormation) => setFormation(newFormation)} />
           </Box>
   
           <Center position="absolute" bottom="10%" left="50%" transform="translateX(-50%)">
