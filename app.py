@@ -50,37 +50,23 @@ if __name__ == '__main__':
 def solveSBC():
     players = solver.load_players_from_database()
     data = request.get_json()
-    formationJson = data.get('formation')
+    formationJson = data.get('formation', [])
     json = data.get('criteria')
-    print()
-
-    formation = []
-
-    for position, count in formationJson.items():
-        for _ in range(count):
-            formation.append(position)
-    print(f"this is the formation input {formationJson}")
-    print(f"this is the criteria json {json}")
-
-    best_squad = solver.solve_sbc(formation,json, players)
-
-    players_list = [{
-        "position": position,
-        "name": player.name,
-        "rating": player.rating,
-        "preferred_position": player.preferred_position,
-        "alternate_position": player.alternate_position,
-        "league": player.league,
-        "rarity": player.rarity,
-        "nation": player.nation,
-        "club": player.club,
-        "chemistry": player.chemistry
-    } for position, player in best_squad.player_assignments]
     
+    best_squad = solver.solve_sbc(formationJson,players, json)
+    print(f"this is the best squad {best_squad}")
+    
+    players_list = [
+        {
+            "name": player.name,
+            "rating": player.rating,
+            "club": player.club,
+            "nation": player.nation,
+            "league": player.league,
+        } for player in best_squad
+    ]
     response = {
-        "best_squad": players_list,
-        "best_squad_fitness": best_squad.fitness,
-        "total_chemistry": best_squad.total_chemistry
+        "best_squad": players_list
     }
     return jsonify(response)
 
@@ -103,6 +89,8 @@ def scrape_data():
         gather_instance.driver.quit()
     
     return jsonify(response)
+
+
 
 @app.route('/logout')
 def logout():

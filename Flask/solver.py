@@ -165,7 +165,14 @@ class genetic:
         for _ in range(population_size):
             squad = Squad(formation)
             for position in formation:
-                eligible_players = [player for player in players if position in player.positions and player.name not in squad.added_player_names]
+                eligible_players = []
+                for player in players:
+                    if position in player.positions and player.name not in squad.added_player_names:
+                        eligible_players.append(player)
+                    else:
+                        print(f"Skipped player: {player.name} for position: {position}")
+
+
                 if eligible_players:
                     selected_player = random.choice(eligible_players)
                     squad.add_player(selected_player, position)
@@ -256,36 +263,38 @@ def load_players_from_database():
     cursor.execute(query)
     players_data = cursor.fetchall()
     connection.close()
-
-
+    # Transform the fetched data into Player objects and return them
+    players = [Player(*player_data) for player_data in players_data]
+    return players
 
 def solve_sbc(formation, players, json_input):
-    # Generate a single population of squads
-        count = 0
-        while count < 11:
-            population = genetic.initialize_population(formation, players, json_input, population_size=10)
-            tournament_size = 5
-            crossover_rate = 0.8
-            mutation_rate = 0.1
-            num_generations = 500
+# Generate a single population of squads
+    count = 0
+    while count < 11:
+        population = genetic.initialize_population(formation, players, json_input, population_size=10)
+        tournament_size = 5
+        crossover_rate = 0.8
+        mutation_rate = 0.1
+        num_generations = 500
 
-            # Inside your main loop where you evolve the generations
-            for generation in range(num_generations):
-                selected_squads = genetic.tournament_selection(population, tournament_size)
-                population = genetic.reproduce(selected_squads, crossover_rate, mutation_rate, players, json_input)
-                # Update fitness for the new population
-                for squad in population:
-                    squad.calculate_fitness(json_input)
-                    squad.calculate_chemistry_for_all()
-        # Ensure there are squads left to check
-            best_squad = max(population, key=lambda squad: squad.fitness)
-            if best_squad.fitness == len(json_input) * 10:
-                break
-            else:
-                count += 1
+        # Inside your main loop where you evolve the generations
+        for generation in range(num_generations):
+            selected_squads = genetic.tournament_selection(population, tournament_size)
+            population = genetic.reproduce(selected_squads, crossover_rate, mutation_rate, players, json_input)
+            # Update fitness for the new population
+            for squad in population:
+                squad.calculate_fitness(json_input)
+                squad.calculate_chemistry_for_all()
+    # Ensure there are squads left to check
+        best_squad = max(population, key=lambda squad: squad.fitness)
+        if best_squad.fitness == len(json_input) * 10:
+            break
+        else:
+            count += 1
 
-            # Print the best squad
-            print("Best Squad:")
-            print(best_squad)
-            print("Best Squad Fitness:", best_squad.fitness)
-            print(f"Total Chemistry: {best_squad.total_chemistry}")
+    # Print the best squad
+    print("Best Squad:")
+    print(best_squad)
+    print("Best Squad Fitness:", best_squad.fitness)
+    print(f"Total Chemistry: {best_squad.total_chemistry}")
+    return best_squad
