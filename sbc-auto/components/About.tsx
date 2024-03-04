@@ -6,7 +6,7 @@ import React from 'react'
 
 import { CustomButtonProps } from '@/types'
 import { Sign } from 'crypto'
-import { CustomButton } from '.'
+import CustomButton from "@/components/CustomButton"
 import { useRouter } from 'next/navigation'
 
 
