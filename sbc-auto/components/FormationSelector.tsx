@@ -11,21 +11,42 @@ interface FormationComponentProps {
 const FormationComponent: React.FC<FormationComponentProps> = ({ onFormationChange }) => {
   const [positionCounts, setPositionCounts] = useState<{ [key: string]: string }>(() => {
     const initialCounts: { [key: string]: string } = {};
-    positions.forEach(position => { initialCounts[position] = '0'; });
+    positions.forEach(position => { initialCounts[position] = '0'; }); // Initialize with '0'
     return initialCounts;
   });
 
+  const [isFocused, setIsFocused] = useState<{ [key: string]: boolean }>(() => {
+    const initialFocus: { [key: string]: boolean } = {};
+    positions.forEach(position => { initialFocus[position] = false; });
+    return initialFocus;
+  });
+
+  const handleFocus = (position: string) => {
+    setIsFocused(prev => ({ ...prev, [position]: true }));
+    if (positionCounts[position] === '0') {
+      setPositionCounts(prevCounts => ({ ...prevCounts, [position]: '' }));
+    }
+  };
+
+  const handleBlur = (position: string) => {
+    setIsFocused(prev => ({ ...prev, [position]: false }));
+    if (positionCounts[position] === '') {
+      setPositionCounts(prevCounts => ({ ...prevCounts, [position]: '0' }));
+    }
+  };
+
   const handleChange = (position: string, value: string) => {
-    const newValue = value.replace(/\D/, ''); 
+    const newValue = value.replace(/\D/g, ''); // Allow only digits
     setPositionCounts(prevCounts => {
-      const updatedCounts = { ...prevCounts, [position]: newValue };
+      const updatedCounts = { ...prevCounts, [position]: newValue || '0' };
       onFormationChange(Object.keys(updatedCounts).reduce((acc, key) => ({
         ...acc,
-        [key]: parseInt(updatedCounts[key], 10)
+        [key]: parseInt(updatedCounts[key], 10) || 0
       }), {}));
       return updatedCounts;
     });
   };
+
   return (
     <ChakraProvider>
       <Box p={4} color="white">
@@ -34,11 +55,12 @@ const FormationComponent: React.FC<FormationComponentProps> = ({ onFormationChan
             <FormControl key={position}>
               <FormLabel>{position}:</FormLabel>
               <Input
-                type="text" // Change type to text to allow typing any characters
+                type="text"
                 name={position}
-                value={positionCounts[position]}
+                value={isFocused[position] ? positionCounts[position] : (positionCounts[position] === '0' ? '' : positionCounts[position])}
                 onChange={e => handleChange(position, e.target.value)}
-                placeholder="0"
+                onFocus={() => handleFocus(position)}
+                onBlur={() => handleBlur(position)}
                 borderColor="blue.500"
                 _hover={{ borderColor: "blue.600" }}
                 focusBorderColor="blue.700"
@@ -52,5 +74,9 @@ const FormationComponent: React.FC<FormationComponentProps> = ({ onFormationChan
 };
 
 export default FormationComponent;
+
+
+
+
 
 

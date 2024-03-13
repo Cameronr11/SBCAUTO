@@ -1,10 +1,11 @@
 "use client";
-import { Box, Text, Center, Spinner, SimpleGrid, VStack } from '@chakra-ui/react';
-import React, { useState, useCallback } from 'react';
+import { Box, Text, Center, VStack, Spinner } from '@chakra-ui/react';
+import React, { useState, useCallback, useEffect } from 'react';
 import FormationSelector from "@/components/FormationSelector";
 import CriteriaComponent from "@/components/CriteriaComponent";
 import CustomButton from "@/components/CustomButton";
-import  {SBCOptions}  from "@/components/CriteriaComponent";
+import { SBCOptions } from "@/components/CriteriaComponent";
+
 interface Player {
   position: string;
   name: string;
@@ -46,6 +47,19 @@ const SolverPage = () => {
   const [criteria, setCriteria] = useState<Criteria[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [squadSolution, setSquadSolution] = useState<SquadSolution | null>(null);
+
+
+  // useEffect hook for setting the background color
+  useEffect(() => {
+    const originalBackgroundColor = document.body.style.backgroundColor;
+    document.body.style.backgroundColor = 'black';
+
+    // Reset the background color when the component unmounts
+    return () => {
+      document.body.style.backgroundColor = originalBackgroundColor;
+    };
+  }, []);
+
 
   const handleSolveClick = async () => {
     setLoading(true);
@@ -97,37 +111,24 @@ const SolverPage = () => {
 
 
   return (
-    <Box bg="black" color="white" minH="100vh" p={5} position="relative">
+    <Box bg="black" color="white" minH="100vh" p={5} display="flex" flexDirection="column" alignItems="center" justifyContent="center">
       {loading ? (
         <Center minH="100vh">
           <Spinner size="xl" />
         </Center>
       ) : squadSolution ? (
         <>
-          <Center mb={6}>
-            <Text fontSize="2xl" color="green.400" fontWeight="bold">Your Best Squad Solution</Text>
-          </Center>
-          <SimpleGrid columns={3} spacing={10}>
+          <Text fontSize="xx-large" color="green.400" fontWeight="bold" mb={6}>SQUAD SOLUTION:</Text>
+          <VStack spacing={4}>
             {squadSolution.best_squad.map((player, index) => (
-              <VStack key={index} bg="gray.700" p={4} borderRadius="md" align="start">
-                <Text color="white" fontSize="lg" fontWeight="bold">{player.position}: {player.name}</Text>
-                <Text color="gray.300">Rating: {player.rating}</Text>
-                <Text color="gray.300">League: {player.league}</Text>
-                <Text color="gray.300">Club: {player.club}</Text>
-                <Text color="gray.300">Nation: {player.nation}</Text>
-                <Text color="gray.300">Chemistry: {player.chemistry}</Text>
-              </VStack>
+              <Text key={index} color="white" fontSize="lg">{player.name}, {player.rating}</Text>
             ))}
-          </SimpleGrid>
-          <Text color="white" fontSize="lg" mt={5}>Best Squad Fitness: {squadSolution.best_squad_fitness}</Text>
-          <Text color="white" fontSize="lg">Total Chemistry: {squadSolution.total_chemistry}</Text>
+          </VStack>
         </>
       ) : (
         <>
           <Center position="absolute" top="5%" left="50%" transform="translateX(-50%)">
-            <h1 className='text-white text-3xl md:text-5xl font-bold mb-6'>
-              Build Your SBC
-            </h1>
+            <Text className='text-white text-3xl md:text-5xl font-bold mb-6'>Build Your SBC</Text>
           </Center>
   
           <Box position="absolute" top="20%" left="10%">

@@ -1,6 +1,6 @@
 import sqlite3
 import math
-import Flask.Helper as Helper
+import Flask.Helper as  Helper #to test just this file take out "Flask.Helper as" 
 import random
 import json
 
@@ -271,8 +271,8 @@ def solve_sbc(formation, players, json_input):
 # Generate a single population of squads
     count = 0
     while count < 11:
-        population = genetic.initialize_population(formation, players, json_input, population_size=10)
-        tournament_size = 5
+        population = genetic.initialize_population(formation, players, json_input, population_size=15)
+        tournament_size = 10
         crossover_rate = 0.8
         mutation_rate = 0.1
         num_generations = 500
@@ -298,3 +298,15 @@ def solve_sbc(formation, players, json_input):
     print("Best Squad Fitness:", best_squad.fitness)
     print(f"Total Chemistry: {best_squad.total_chemistry}")
     return best_squad
+
+
+#to test just this file un comment tests below
+
+#formation = ['GK', 'LB', 'CB', 'CB', 'RB', 'LM', 'CM', 'CM', 'RM', 'ST', 'ST']
+#json_input = {
+    #1: 80,
+    #8: 4,
+    #18:10
+#}
+#players = load_players_from_database()
+#solve_sbc(formation, players, json_input)

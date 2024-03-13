@@ -33,7 +33,7 @@ const About = () => {
         </Link>
 
         <CustomButton
-          title="Sign in Ya Degenerates"
+          title="Sign in"
           btnType="button"
           containerStyles="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow-lg hover:shadow transition duration-200 ease-in-out"
           handleClick={navigateToSignIn}
