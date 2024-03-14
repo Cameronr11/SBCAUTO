@@ -81,14 +81,41 @@ def scrape_data():
         return jsonify({"status": "Error", "message": "User not logged in"}), 401
     try:
         gather_instance = Gather()
-        gather_instance.scrape_user_club(username, password)
-        response = {"status": "Success", "message": "Scraping Complete"}
+        is_2FA_needed = gather_instance.is_2FA(username, password)
+        print(f"this is the is 2FA needed {is_2FA_needed}")
+        #gather_instance.driver.quit()
+        if is_2FA_needed:
+            print('sending status to front end that we need 2FA')
+            return jsonify({"status": "2FA Required", "message": "2FA verification needed"}), 200
+        else:
+            gather_instance.scrape_without_2FA(username, password)
+            return jsonify({"status": "Success", "message": "Scraping complete"}), 200
+        
     except Exception as e:
         response = {"status": "Error", "message": str(e)}
-    finally:
-        gather_instance.driver.quit()
-    
     return jsonify(response)
+
+
+@app.route('/submit-2FA', methods=['POST'])
+def submit_2FA():
+    print("in submitting 2FA")
+    data = request.get_json()
+    username = session.get('username')
+    password = session.get('password')
+    code = data.get('code')
+
+    if not username or not password or not code:
+        return jsonify({"status": "Error", "message": "Missing credentials or 2FA code"}), 400
+    
+    try:
+        gather_instance = Gather()
+        print("scraping with code")
+        # Use the provided 2FA code to proceed with the scraping process
+        gather_instance.scrape_user_club(username, password, code)
+        print("scraped with code")
+        return jsonify({"status": "Success", "message": "Scraping after 2FA complete"}), 200
+    except Exception as e:
+        return jsonify({"status": "Error", "message": str(e)}), 500
 
 
 

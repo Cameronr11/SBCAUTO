@@ -72,18 +72,32 @@ class Gather:
             
     #2FA Code: For now we will input the code 
     #manually to move on will just need to design the website to ask for their code. 
-
-    def handle_2FA(self):
+    def check_if_2FA(self):
         try:
+            print("attempting to find 2FA button in check")
             send_2FA_code_button = WebDriverWait(Gather.driver, 45).until(EC.element_to_be_clickable((By.ID, "btnSendCode")))
+            print("found 2FA button in check")
             send_2FA_code_button.click()
+            print("clicked 2FA button in check")
+            return True
         except:
-            print("Couln't Click 2FA send Code Button")
+            print("No 2FA to check")
+            return False
+    
 
+    def handle_2FA(self, code=None):
+        try:
+            print("attempting to find 2FA button in handle")
+            send_2FA_code_button = WebDriverWait(Gather.driver, 45).until(EC.element_to_be_clickable((By.ID, "btnSendCode")))
+            print("found 2FA button in handle")
+            send_2FA_code_button.click()
+            print("clicked 2FA button in handle")
+        except:
+            print("Couldn't send 2FA code")
         #we have to check if the 2FA screen is present
         if "verificationGate" in Gather.driver.page_source:
             print("2FA Page Found. Please intput the code that was sent to your email")
-            Verification_code = input("Enter Verification Code: ")
+            Verification_code = code
             try:
                 Verification_code_input = WebDriverWait(Gather.driver, 45).until(EC.presence_of_element_located((By.ID, "twoFactorCode")))
                 Verification_code_input.send_keys(Verification_code)
@@ -92,6 +106,8 @@ class Gather:
             
             except:
                 print("Couldn't finish 2FA")
+        else:
+            print("No 2FA to Handle")
 
     # We are now passed the 2FA page. We are sitting at the main
     #Web app page
@@ -269,13 +285,32 @@ class Gather:
         except Exception as e:
             print(f"some players aren't being added: {e}")
 
-    def scrape_user_club(self, username, password):
+    def scrape_user_club(self, username, password, code):
         Gather.openEAFC(self)
         Gather.pressLogin(self)
         Gather.inputLogin(self,username,password)
         Gather.click_sign_in(self)
-        Gather.handle_2FA(self)
+        Gather.handle_2FA(self, code)
         Gather.click_Club(self)
         Gather.click_Players(self)
         Gather.scrape_Save(self)
         print("Scraping Complete")
+        self.driver.quit()
+
+    def scrape_without_2FA(self, username, password):
+        Gather.openEAFC(self)
+        Gather.pressLogin(self)
+        Gather.inputLogin(self,username,password)
+        Gather.click_sign_in(self)
+        Gather.click_Club(self)
+        Gather.click_Players(self)
+        Gather.scrape_Save(self)
+        print("Scraping Complete")
+        self.driver.quit()
+
+    def is_2FA(self, username, password):
+        Gather.openEAFC(self)
+        Gather.pressLogin(self)
+        Gather.inputLogin(self,username,password)
+        Gather.click_sign_in(self)
+        return Gather.check_if_2FA(self)
