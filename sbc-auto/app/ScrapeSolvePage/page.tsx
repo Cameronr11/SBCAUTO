@@ -67,19 +67,16 @@ const ScrapeSolvePage = () => {
   const showSuccessAndNavigate = (): void => {
     toast({
       title: 'Scraping Complete',
-      description: 'You can now proceed to the Solver Page.',
+      description: 'You are being redirected to the Solver Page.',
       status: 'success',
-      duration: null, // Requires user action to close
+      duration: 2000, // Show the toast for 5 seconds
       isClosable: true,
-      render: () => (
-        <Box p={3} bg="green.500" color="white" display="flex" flexDirection="column" alignItems="center">
-          <Text>Scraping successful! Click below to proceed.</Text>
-          <Button mt={2} colorScheme="teal" onClick={() => router.push('/SolverPage')}>
-            Go to Solver Page
-          </Button>
-        </Box>
-      ),
     });
+  
+    // Navigate after the toast has been shown for its duration
+    setTimeout(() => {
+      router.push('/SolverPage');
+    }, 2000); // Adjust the delay to match the toast's duration
   };
 
   const showError = (message: string): void => {
@@ -116,7 +113,7 @@ const ScrapeSolvePage = () => {
             <ChakraButton
               onClick={handleSubmit2FA}
               isLoading={isLoading}
-              loadingText="Submitting"
+              loadingText="Scraping your UT Club...."
               colorScheme="blue"
               variant="solid"
               size="lg"
@@ -127,6 +124,8 @@ const ScrapeSolvePage = () => {
           </div>
         )}
         <p className="mt-4 text-lg">Relax, this may take a minute or two.</p>
+        <p className="mt-4 text-lg">After Successful Scraping of your Ultimate Team Club
+                                    we will redirect you to the next step!</p>
       </div>
     </div>
   );
