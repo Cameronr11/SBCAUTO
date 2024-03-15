@@ -57,7 +57,17 @@ const CriteriaComponent: React.FC<Props> = ({ onCriteriaChange }) => {
       <Stack spacing={4}>
         {criteriaList.map((criterion, index) => (
           <Stack key={criterion.id} direction="row" alignItems="center">
-            <Select placeholder="Select Criteria" value={criterion.type} onChange={(e) => handleCriteriaChange(criterion.id, 'type', e.target.value)}>
+            <Select
+              placeholder="Select Criteria"
+              value={criterion.type}
+              onChange={(e) => handleCriteriaChange(criterion.id, 'type', e.target.value)}
+              sx={{
+                option: {
+                  color: 'black', // Ensure text color is always visible
+                  backgroundColor: 'white', // Optional: Adjust if you have a specific bg color
+                },
+              }}
+            >
               {SBCOptions.map(option => (
                 <option key={option.id} value={option.value}>{option.label}</option>
               ))}
