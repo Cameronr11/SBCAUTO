@@ -110,7 +110,8 @@ const ScrapeSolvePage = () => {
               value={twoFACode}
               onChange={(e) => setTwoFACode(e.target.value)}
               size="lg"
-              className="mt-2 text-lg"
+              className="appearance-none block w-full bg-gray-800 text-white border border-gray-600 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-gray-700 focus:border-gray-500 mt-2 text-lg"
+              type="text"
             />
             <ChakraButton
               onClick={handleSubmit2FA}
