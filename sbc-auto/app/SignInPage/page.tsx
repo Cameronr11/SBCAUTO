@@ -30,6 +30,7 @@ export const SignInPage = () => {
         // Handle successful submission here
         const responseData = await response.json();
         console.log('Success:', responseData);
+        localStorage.setItem('isSignedIn', 'true');
         router.push('/ScrapeSolvePage') //move to the end when api integrated
       } else {
         // Handle errors or unsuccessful submission here
