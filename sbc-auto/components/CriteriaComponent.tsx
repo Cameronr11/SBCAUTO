@@ -1,13 +1,13 @@
 "use client";
 import React, { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { Select, Input, Stack, IconButton, ChakraProvider } from '@chakra-ui/react';
-import { AddIcon } from '@chakra-ui/icons';
+import { Select, Input, Stack, IconButton, ChakraProvider, Button } from '@chakra-ui/react';
+import { AddIcon, MinusIcon } from '@chakra-ui/icons';
 
 interface Criteria {
   id: string;
   type: string;
-  value: string | number;
+  values: (string | number)[];
 }
 
 interface Props {
@@ -40,16 +40,26 @@ export const SBCOptions = [
 ];
 
 const CriteriaComponent: React.FC<Props> = ({ onCriteriaChange }) => {
-  const [criteriaList, setCriteriaList] = useState<Criteria[]>([{ id: uuidv4(), type: '', value: '' }]);
+  const [criteriaList, setCriteriaList] = useState<Criteria[]>([{ id: uuidv4(), type: '', values: [''] }]);
 
-  const handleCriteriaChange = (id: string, field: keyof Criteria, value: string) => {
-    const updatedCriteria = criteriaList.map(c => c.id === id ? { ...c, [field]: value } : c);
-    setCriteriaList(updatedCriteria);
-    onCriteriaChange(updatedCriteria);
+  const handleCriteriaTypeChange = (id: string, type: string) => {
+    setCriteriaList(prev => prev.map(c => c.id === id ? { ...c, type, values: [''] } : c));
+  };
+
+  const handleValueChange = (id: string, value: string, index: number) => {
+    setCriteriaList(prev => prev.map(c => c.id === id ? { ...c, values: c.values.map((val, idx) => idx === index ? value : val) } : c));
+  };
+
+  const addValue = (id: string) => {
+    setCriteriaList(prev => prev.map(c => c.id === id ? { ...c, values: [...c.values, ''] } : c));
+  };
+
+  const removeValue = (id: string, index: number) => {
+    setCriteriaList(prev => prev.map(c => c.id === id ? { ...c, values: c.values.filter((_, idx) => idx !== index) } : c));
   };
 
   const addCriteria = () => {
-    setCriteriaList([...criteriaList, { id: uuidv4(), type: '', value: '' }]);
+    setCriteriaList([...criteriaList, { id: uuidv4(), type: '', values: [''] }]);
   };
 
   return (
@@ -60,7 +70,7 @@ const CriteriaComponent: React.FC<Props> = ({ onCriteriaChange }) => {
             <Select
               placeholder="Select Criteria"
               value={criterion.type}
-              onChange={(e) => handleCriteriaChange(criterion.id, 'type', e.target.value)}
+              onChange={(e) => handleCriteriaTypeChange(criterion.id, e.target.value)}
               sx={{
                 option: {
                   color: 'black', // Ensure text color is always visible
@@ -72,7 +82,21 @@ const CriteriaComponent: React.FC<Props> = ({ onCriteriaChange }) => {
                 <option key={option.id} value={option.value}>{option.label}</option>
               ))}
             </Select>
-            <Input placeholder="Value" value={criterion.value.toString()} onChange={(e) => handleCriteriaChange(criterion.id, 'value', e.target.value)} />
+            {criterion.values.map((value, idx) => (
+              <Stack key={idx} direction="row" alignItems="center">
+                <Input
+                  placeholder="Value"
+                  value={value.toString()}
+                  onChange={(e) => handleValueChange(criterion.id, e.target.value, idx)}
+                />
+                {idx > 0 && (
+                  <IconButton aria-label="Remove value" icon={<MinusIcon />} onClick={() => removeValue(criterion.id, idx)} />
+                )}
+              </Stack>
+            ))}
+            {criterion.type && (
+              <Button onClick={() => addValue(criterion.id)}>Add Value</Button>
+            )}
             {index === criteriaList.length - 1 && (
               <IconButton aria-label="Add criteria" icon={<AddIcon />} onClick={addCriteria} />
             )}

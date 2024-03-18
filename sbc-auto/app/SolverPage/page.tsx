@@ -29,7 +29,7 @@ interface Formation {
 interface Criteria {
   id: string;
   type: string;
-  value: string | number;
+  values: (string | number)[];
 }
 
 export type SBCOption = {
@@ -66,7 +66,7 @@ const SolverPage = () => {
     const criteriaPayload = criteria.reduce<{ [key: string]: string | number }>((acc, curr) => {
       const option = SBCOptions.find((option: SBCOption) => option.value === curr.type);
       if (option) {
-        acc[option.id.toString()] = curr.value;
+        acc[option.id.toString()] = curr.values.join(', ');
       }
       return acc;
     }, {});
@@ -106,7 +106,7 @@ const SolverPage = () => {
   };
 
   const updateCriteria = useCallback((newCriteria: Criteria[]) => {
-    setCriteria(newCriteria.map(crit => ({ id: crit.id, type: crit.type, value: crit.value }))); // This ensures criteria state is updated correctly
+    setCriteria(newCriteria.map(crit => ({ id: crit.id, type: crit.type, values: crit.values })));
   }, []);
 
 
@@ -114,7 +114,7 @@ const SolverPage = () => {
     <Box bg="black" color="white" minH="100vh" p={5} display="flex" flexDirection="column" alignItems="center" justifyContent="center">
       {loading ? (
         <Center minH="100vh">
-          <Spinner size="xl" />
+          <Spinner size="lg" />
         </Center>
       ) : squadSolution ? (
         <>
@@ -131,30 +131,24 @@ const SolverPage = () => {
             <Text className='text-white text-3xl md:text-5xl font-bold mb-6'>Build Your SBC</Text>
           </Center>
   
-          <Box position="absolute" top="20%" left="10%">
-            <Text mb={4} fontSize="2xl" color="blue.400" fontWeight="bold">Specify # of Players Per Position:</Text>
-            <FormationSelector onFormationChange={(newFormation) => setFormation(newFormation)} />
-          </Box>
-
   
-          <Box position="absolute" top="20%" right="10%">
+          <Box width="80%" mt="10rem"> {/* Adjustments made here */}
             <Text mb={4} fontSize="2xl" color="blue.400" fontWeight="bold">Choose SBC Criteria:</Text>
             <CriteriaComponent onCriteriaChange={updateCriteria} />
           </Box>
 
-          <Box position="absolute" top="20%" left="10%">
+          <Box width="80%" mt="2rem"> {/* Adjustments made here */}
             <Text mb={4} fontSize="2xl" color="blue.400" fontWeight="bold">Specify # of Players Per Position:</Text>
             <FormationSelector onFormationChange={(newFormation) => setFormation(newFormation)} />
           </Box>
-  
-          <Center position="absolute" bottom="10%" left="50%" transform="translateX(-50%)">
+          <Center mt="2rem"> {/* Adjustment made here */}
             <CustomButton
               title="Solve"
               btnType="button"
               containerStyles="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
               handleClick={handleSolveClick}
             />
-          </Center>
+        </Center>
         </>
       )}
     </Box>
