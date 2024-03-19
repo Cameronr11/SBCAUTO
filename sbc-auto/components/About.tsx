@@ -2,19 +2,35 @@
 
 import Link from 'next/link'
 import Image from 'next/image' // Add this line
-import React from 'react'
 
-import { CustomButtonProps } from '@/types'
-import { Sign } from 'crypto'
+import React, { useEffect, useState } from 'react';
 import CustomButton from "@/components/CustomButton"
 import { useRouter } from 'next/navigation'
 
 
 
 const About = () => {
+  const router = useRouter();
+  const [isSignedIn, setIsSignedIn] = useState(false);
 
-  const router = useRouter()
-  const isSignedIn = localStorage.getItem('isSignedIn') === 'true'; // Check local storage
+  useEffect(() => {
+    const checkSignInStatus = () => {
+      const signedIn = localStorage.getItem('isSignedIn') === 'true';
+      setIsSignedIn(signedIn);
+    };
+  
+  
+    // Listen for the custom event
+    const handleSignInStatusChange = () => {
+      checkSignInStatus();
+    };
+  
+    window.addEventListener('signedInStatusChanged', handleSignInStatusChange);
+  
+    return () => {
+      window.removeEventListener('signedInStatusChanged', handleSignInStatusChange);
+    };
+  }, []);
 
   const navigateToSignIn = () => {
     router.push('/SignInPage')

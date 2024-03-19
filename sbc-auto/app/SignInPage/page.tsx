@@ -31,7 +31,9 @@ export const SignInPage = () => {
         const responseData = await response.json();
         console.log('Success:', responseData);
         localStorage.setItem('isSignedIn', 'true');
-        router.push('/ScrapeSolvePage') //move to the end when api integrated
+        window.dispatchEvent(new CustomEvent('signedInStatusChanged'));
+        router.push('/ScrapeSolvePage'); // Redirect after setting the sign-in status
+
       } else {
         // Handle errors or unsuccessful submission here
         console.error('Failed to submit form');
