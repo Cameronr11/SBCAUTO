@@ -118,6 +118,15 @@ const ScrapeSolvePage = () => {
               variant="solid"
               size="lg"
               className="mt-4 py-3 px-6 text-lg"
+              sx={{
+                background: 'bg-blue-500', 
+                color: 'white',
+                fontWeight: 'bold',
+                borderRadius: 'md', 
+                paddingY: '1.5rem', 
+                paddingX: '1.5rem', 
+                fontSize: 'lg', 
+              }}
             >
               Submit 2FA Code
             </ChakraButton>
