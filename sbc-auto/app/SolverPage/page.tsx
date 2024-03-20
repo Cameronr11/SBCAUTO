@@ -1,10 +1,11 @@
 "use client";
-import { Box, Text, Center, VStack, Spinner } from '@chakra-ui/react';
+import { Box, Text, Center, VStack, Spinner, Grid } from '@chakra-ui/react';
 import React, { useState, useCallback, useEffect } from 'react';
 import FormationSelector from "@/components/FormationSelector";
 import CriteriaComponent from "@/components/CriteriaComponent";
 import CustomButton from "@/components/CustomButton";
 import { SBCOptions } from "@/components/CriteriaComponent";
+import PlayerCard from "@/components/PlayerCard";
 
 interface Player {
   position: string;
@@ -119,11 +120,11 @@ const SolverPage = () => {
       ) : squadSolution ? (
         <>
           <Text fontSize="xx-large" color="green.400" fontWeight="bold" mb={6}>SQUAD SOLUTION:</Text>
-          <VStack spacing={4}>
+          <Grid templateColumns="repeat(3, 1fr)" gap={6}>
             {squadSolution.best_squad.map((player, index) => (
-              <Text key={index} color="white" fontSize="lg">{player.name}, {player.rating}</Text>
+            <PlayerCard key={index} player={player} index={index} />
             ))}
-          </VStack>
+          </Grid>
         </>
       ) : (
         <>
@@ -131,27 +132,28 @@ const SolverPage = () => {
             <Text className='text-white text-3xl md:text-5xl font-bold mb-6'>Build Your SBC</Text>
           </Center>
   
-  
-          <Box width="80%" mt="10rem"> {/* Adjustments made here */}
+          <Box width="80%" mt="10rem">
             <Text mb={4} fontSize="2xl" color="blue.400" fontWeight="bold">Choose SBC Criteria:</Text>
             <CriteriaComponent onCriteriaChange={updateCriteria} />
           </Box>
 
-          <Box width="80%" mt="2rem"> {/* Adjustments made here */}
+          <Box width="80%" mt="2rem">
             <Text mb={4} fontSize="2xl" color="blue.400" fontWeight="bold">Specify # of Players Per Position:</Text>
             <FormationSelector onFormationChange={(newFormation) => setFormation(newFormation)} />
           </Box>
-          <Center mt="2rem"> {/* Adjustment made here */}
+
+          <Center mt="2rem">
             <CustomButton
               title="Solve"
               btnType="button"
               containerStyles="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
               handleClick={handleSolveClick}
             />
-        </Center>
+          </Center>
         </>
       )}
     </Box>
   );
-}
+};
+
 export default SolverPage;
