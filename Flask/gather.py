@@ -31,7 +31,7 @@ class Gather:
     chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--window-size=1920x1080")
     chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36")
-    chrome_options.page_load_strategy = 'normal'  # Options: 'none', 'eager', 'normal'
+    chrome_options.page_load_strategy = 'eager'  # Options: 'none', 'eager', 'normal'
 
     driver = webdriver.Chrome(options=chrome_options)
 
@@ -256,7 +256,7 @@ class Gather:
 
         while True:
             try:
-                time.sleep(5) #time to allow ratings to render
+                time.sleep(1) #time to allow ratings to render
                 all_player_names_1page, all_player_clubs_1page, all_player_ratings_1page, all_player_nations_1page, all_player_leagues_1page, all_player_pp_1page, all_player_ap_1page, all_player_rarities_1page = self.scrape_page(self.driver)
 
                 
