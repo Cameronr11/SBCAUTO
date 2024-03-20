@@ -20,12 +20,12 @@ import sqlite3
 import uuid
 import secrets
 from flask_cors import CORS
-
+from extensions import socketio
 
 app = Flask(__name__)
-import secrets
 app.secret_key = secrets.token_hex(16)
 CORS(app, supports_credentials=True)
+socketio.init_app(app)
 
 
 @app.route('/login', methods=['POST'])
@@ -129,4 +129,4 @@ def logout():
 
 
 if __name__ == '__main__':
-    app.run()
+    socketio.run(app, debug=True)

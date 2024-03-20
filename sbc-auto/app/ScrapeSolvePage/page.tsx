@@ -1,7 +1,10 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Spinner, useToast, Input, Button as ChakraButton, Box, Text, Button } from '@chakra-ui/react';
+import io from 'socket.io-client';
+
+const socket = io('http://localhost:5000');
 
 const ScrapeSolvePage = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -9,7 +12,35 @@ const ScrapeSolvePage = () => {
   const [twoFACode, setTwoFACode] = useState('');
   const router = useRouter();
   const toast = useToast();
+  const [progress, setProgress] = useState(0);
+  const totalPlayersRef = useRef(1); // Use a ref to keep track of the total players
+  const [totalPlayers, setTotalPlayers] = useState(1); // You might still keep this if you need to trigger re-renders
 
+
+  useEffect(() => {
+    socket.on('num_players', ({ num_players }) => {
+      console.log('event happened to set num players');
+      console.log(`Total players to scrape: ${num_players}`);
+      totalPlayersRef.current = num_players; // Update ref value
+      setTotalPlayers(num_players); // Update state if needed for re-render
+      setProgress(0); // Reset progress on new scrape operation
+    });
+
+    socket.on('scraped_players', ({ scraped_players }) => {
+      console.log(`Scraped players so far: ${scraped_players}`);
+      // Use the current value from the ref
+      console.log(`Total players to scrape: ${totalPlayersRef.current}`)
+      const updatedProgress = Math.round((scraped_players / totalPlayersRef.current) * 1000)/10;
+      console.log(`Updated progress: ${updatedProgress}%`);
+      setProgress(updatedProgress);
+    });
+
+    return () => {
+      socket.off('num_players');
+      socket.off('scraped_players');
+    };
+  }, []);   
+  
   const handleScrapePlayers = async (): Promise<void> => {
     setIsLoading(true);
     try {
@@ -92,7 +123,7 @@ const ScrapeSolvePage = () => {
   return (
     <div className="flex h-screen bg-black">
       <div className="m-auto w-full max-w-6xl p-10 bg-gray-800 text-white shadow-xl rounded-xl">
-        <h2 className="text-3xl font-bold mb-6">Step 1: Gather Available Players</h2>
+        <h2 className="text-3xl font-bold mb-6">Gather Available Players</h2>
         <button
           onClick={handleScrapePlayers}
           disabled={isLoading}
@@ -100,6 +131,14 @@ const ScrapeSolvePage = () => {
         >
           {isLoading ? <Spinner size="lg" color="white" /> : 'Start Gathering'}
         </button>
+        {isLoading && (
+          <div className="mt-4">
+            <p className="text-lg">Scraping progress: {progress}%</p>
+            <div className="bg-gray-700 h-2 rounded-full overflow-hidden">
+              <div className="bg-blue-600 h-full" style={{ width: `${progress}%` }}></div>
+            </div>
+          </div>
+        )}
         {is2FARequired && (
           <div className="mt-6 bg-gray-700 p-6 shadow-inner rounded-lg">
             <Input
@@ -138,8 +177,6 @@ const ScrapeSolvePage = () => {
       </div>
     </div>
   );
-};
-
+}
 export default ScrapeSolvePage;
-
 

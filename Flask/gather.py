@@ -9,11 +9,17 @@ from selenium.webdriver.common.action_chains import ActionChains
 import pandas as pd
 import traceback
 import sqlite3
+from extensions import socketio
 
-#dependencies: selenium, pandas, sqlite3
+#dependencies: selenium, pandas, sqlite3, socketio
 
 
 class Gather:
+
+    def init(self, scraped_players):
+        self.scraped_players = scraped_players
+
+
     #signing into web app
     chrome_driver_path = "C:\\Program Files (x86)\\chromedriver.exe"
 
@@ -138,6 +144,15 @@ class Gather:
         for i in range(max_attempts_players):
             try:
                 players_button = WebDriverWait(Gather.driver, 45).until(EC.element_to_be_clickable((By.CLASS_NAME, "tile.col-2-3-md.players-tile")))
+                print("trying to find number of players")
+                num_total_players = WebDriverWait(players_button, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".ut-label-view--label")))
+                print("found total number of players")
+                num_total_players_text = num_total_players.text
+                print("turned the number of players into text")
+                num_players = int(num_total_players_text.split()[0])
+                print("split the number of players into just the integer value")
+                print(f"Number of players to scrape: {num_players}")
+                socketio.emit('num_players', {'num_players': num_players})
                 players_button.click()
                 players_button_clicked = True
                 break
@@ -150,7 +165,6 @@ class Gather:
             print("Error: Player page did not render within the expected time.")
 
 
-
     #Above code gets us to the list of players a user owns
 
     def is_loan_player(self,card):
@@ -158,6 +172,9 @@ class Gather:
         classes = card.find_element(By.CLASS_NAME, 'small').get_attribute(attribute)
         return classes and 'loan' in classes.lower()
 
+
+    def scraped_num_setter(self):
+        self.scraped_players = 0
     def scrape_page(self,driver):
 
         paginated_list = WebDriverWait(driver,45).until(EC.presence_of_element_located((By.CSS_SELECTOR, '.paginated-item-list.ut-pinned-list ul.paginated')))
@@ -172,12 +189,12 @@ class Gather:
         all_player_rarities_1page = []
         all_player_pp_1page = []
         all_player_ap_1page = []
-
-
             # Assuming card is an index
         for card in player_cards:
             if not self.is_loan_player(card):
                 try:
+                    self.scraped_players += 1
+                    socketio.emit('scraped_players', {'scraped_players': self.scraped_players})
                     time.sleep(1)
                     player_button = WebDriverWait(card, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'div.rowContent.has-tap-callback')))
                     player_button.click()
@@ -298,6 +315,7 @@ class Gather:
         Gather.handle_2FA(self, code)
         Gather.click_Club(self)
         Gather.click_Players(self)
+        Gather.scraped_num_setter(self)
         Gather.scrape_Save(self)
         print("Scraping Complete")
         self.driver.quit()
@@ -309,6 +327,7 @@ class Gather:
         Gather.click_sign_in(self)
         Gather.click_Club(self)
         Gather.click_Players(self)
+        Gather.scraped_num_setter(self)
         Gather.scrape_Save(self)
         print("Scraping Complete")
         self.driver.quit()
