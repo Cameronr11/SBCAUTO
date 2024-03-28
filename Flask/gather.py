@@ -127,7 +127,7 @@ class Gather:
     def click_Continue_ea_message(self):
         try:
             print("Trying to locate continue button")
-            continue_button = WebDriverWait(Gather.driver, 15).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "div.ut-livemessage-footer > button.btn-standard.call-to-action")))
+            continue_button = WebDriverWait(Gather.driver, 7).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "div.ut-livemessage-footer > button.btn-standard.call-to-action")))
 
             print("Found continue button")
             # Use JavaScript to force a click on the button
