@@ -124,6 +124,18 @@ class Gather:
     #Web app page
     #right here we need to create a statement that says if the continue button is on the screen then click it if not just continue to club button
 
+    def click_Continue_ea_message(self):
+        try:
+            print("Trying to locate continue button")
+            continue_button = WebDriverWait(Gather.driver, 15).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "div.ut-livemessage-footer > button.btn-standard.call-to-action")))
+
+            print("Found continue button")
+            # Use JavaScript to force a click on the button
+            continue_button.click()
+            print("EA message was present and has been dismissed.")
+        except:
+            print("EA message was not present. Continuing to club button.")
+
     def click_Club(self):
         #Club button
         max_attempts_club = 5
@@ -313,6 +325,7 @@ class Gather:
         Gather.inputLogin(self,username,password)
         Gather.click_sign_in(self)
         Gather.handle_2FA(self, code)
+        Gather.click_Continue_ea_message(self)
         Gather.click_Club(self)
         Gather.click_Players(self)
         Gather.scraped_num_setter(self)
@@ -325,6 +338,7 @@ class Gather:
         Gather.pressLogin(self)
         Gather.inputLogin(self,username,password)
         Gather.click_sign_in(self)
+        Gather.click_Continue_ea_message(self)
         Gather.click_Club(self)
         Gather.click_Players(self)
         Gather.scraped_num_setter(self)
